@@ -66,3 +66,12 @@ cd game && python3 -m http.server 4200          # → http://localhost:4200 (타
 - **M2 ✅** EN 번역 4편 + 구조 패리티(213=213).
 - **M3 ✅** JP 번역 4편(SNZ 규약: 미니멀·echo 후렴 고정·§역접 0·인명無) + 3판 패리티 + echo 일치.
 - **M4 ✅** 심화 메커닉(입술 침묵 회수·작품 경계 카드) + 배포(GitHub Pages). *남은 것: 브라우저 UX 실확인.*
+
+## 라이선스 · License
+
+| | License | Terms |
+|---|---|---|
+| **Engine / Code** 엔진(snz-novel 공유) | [PolyForm Noncommercial 1.0.0](LICENSE) | 비상업 목적은 누구나 자유(개인·비영리 작가 자기 작품에 사용·수정·배포). **상업 이용은 별도 계약** — hyeon3125@gmail.com |
+| **Narrative content** 단편 4편 원고·본문 | [CC BY-NC-SA 4.0](LICENSE-CONTENT.md) | 비영리 향유·공유·2차 창작 자유, 상업 이용만 별도 계약 |
+
+> 엔진은 [SCALAR: NODE ZERO](https://github.com/hyeon3125-dev/snz-novel) 와 동일한 5레이어 코어(PolyForm Noncommercial). 비영리 개인 작가가 자기 소설을 인터랙티브 노벨로 만드는 데 자유롭게 가져다 쓸 수 있고, 상업적 사용만 별도 협의입니다.
