@@ -1,0 +1,63 @@
+<div align="center">
+
+# 차이 — 단편집
+**결정론 단편집 · A Deterministic Short-Story Collection**
+
+*SCALAR: NODE ZERO 인터랙티브 엔진 재사용 · 4편 · 한국어·English·日本語*
+
+</div>
+
+---
+
+```
+SNZ 엔진(5레이어)을 그대로 빌려, 짧은 철학 단편 4편을 인터랙티브 노벨로.
+AI 없음 · 서버 없음 · 빌드 없음 · 의존성 0. 원고 전문 포함.
+```
+
+수록작: **비효율 · 기억 라우터 · 차이 · 입술의 무게** (전부 결정론·비가역·비선택 주제).
+
+## 구조 · Architecture (snz-novel 미러)
+
+```
+manuscript/   원고 (정본) — ko/ 작품별 .md + _order.txt
+tools/        parse_short.py(변환) · smoke_headless.mjs(회귀) · annotations/(인터랙티브 사이드카)
+game/         게임 본체 — index.html · style.css · script.js[생성] · state/director/stage/input/main.js
+```
+
+**엔진은 snz-novel game/ 에서 가져와 재사용**(공유 코어). 작품별 차이는 **데이터(script)+사이드카**로만:
+- `parse_short.py` 가 단편 스키마(`# 제목` / `## Ch.N` / `-----` / 문단)를 SNZ 와 동일한 `window.SCRIPT` 로 변환.
+- SNZ 전용 기능(가문 테마·16떡밥·완독 판정)은 **데이터가 안 쓰면 자동 휴면**(판정은 `ch===200` 에서만 발동 → 단편엔 없음).
+- 세이브 키는 `shorts_*` 로 분리(같은 호스트에서 SNZ 와 충돌 없음).
+
+## 빌드 · Build
+
+```bash
+cd scalar-shorts
+for L in ko en jp; do
+  python3 tools/parse_short.py manuscript/$L/_order.txt \
+    -o game/script$([ $L = ko ] && echo "" || echo ".$L").js -a tools/annotations/ko.json --lang $L
+done
+python3 tools/verify_parity.py                 # 3판 구조 1:1 + echo 후렴 일치
+node tools/smoke_headless.mjs                   # KO 회귀; SNZ_LANG=en|jp 으로 EN/JP
+cd game && python3 -m http.server 4200          # → http://localhost:4200 (타이틀서 언어 선택)
+```
+
+## 인터랙티브 설계 (M0)
+
+엔진의 기존 어휘(fx: echo/blank/pause_b · interaction: silence/release/hold)만으로, **각 작품의 주제에 내장된** 상호작용을 입혔다.
+
+| 작품 | 핵심 메커닉 | 적용(M0) |
+|---|---|---|
+| **비효율** | 결정론적 의사결정(검토→기각) | "기각" 후렴 `echo`, "허용한다" `pause_b` |
+| **기억 라우터** | 저장/로드·비가역 | "로드했다" `echo`, "마셨다.마시지않았다" 중첩 `blank`, 라우터 끄기 `hold`(되돌릴 수 없는 실행), "오늘이 하나" `pause_b` |
+| **차이** | 동일성 속 유일한 차이 | "차이를 모르겠다" 후렴 `echo`, 전환·결말 `pause_b` |
+| **입술의 무게** | 말하지 않은 것의 누적 | 4 침묵 순간 중 3 `silence`(비선택 기록)·메일 `release`, "말하지 않았다" `echo` |
+
+> **M1 확장 후보**(엔진 보강 필요): 입술 4침묵 → seed/회수 게이트(끝에서 4개 회수), 라우터 저장/로드 → 실제 리플레이 메커닉, 비효율 복제 → `timeout_choice`("조작된 선택→정해진 기각").
+
+## 진행 상태
+- **M0 ✅** 파서 + KO 빌드(4작품·7유닛·213라인) + 엔진 부착 + 인터랙티브 1차 + 헤드리스.
+- **M1 ✅** 외형 정리(엔드카드·TOC·유닛라벨) + 비효율 `timeout_choice`("조작된 선택").
+- **M2 ✅** EN 번역 4편 + 구조 패리티(213=213).
+- **M3 ✅** JP 번역 4편(SNZ 규약: 미니멀·echo 후렴 고정·§역접 0·인명無) + 3판 패리티 + echo 일치.
+- **M4** 배포 — git init·README·랜딩 링크(GitHub Pages). *남은 것: 브라우저 UX 실확인, M1후보 심화 메커닉(입술 회수게이트·라우터 리플레이) 선택 적용.*

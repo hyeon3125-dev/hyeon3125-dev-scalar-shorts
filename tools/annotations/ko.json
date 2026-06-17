@@ -1,0 +1,28 @@
+{
+  "_doc": "단편집 인터랙티브 사이드카 — SNZ 엔진 기존 어휘(fx/interaction)만 사용. 본문 근거 주석.",
+  "_fx_doc": "씬ID → {라인idx: echo|blank|pause_b|loss|light}. echo=반복 후렴 공명, blank=중첩/공백, pause_b=강제 박자.",
+  "fx": {
+    "ineff_s03": { "5": "echo" },
+    "ineff_s04": { "4": "echo" },
+    "ineff_s05": { "8": "echo" },
+    "ineff_s06": { "5": "pause_b" },
+    "router_c1_s02": { "4": "echo" },
+    "router_c2_s01": { "5": "echo" },
+    "router_c2_s05": { "14": "blank" },
+    "router_c3_s02": { "5": "pause_b", "11": "pause_b" },
+    "diff_c1_s02": { "2": "echo" },
+    "diff_c1_s03": { "8": "pause_b" },
+    "diff_c2_s01": { "5": "pause_b" },
+    "lips_s04": { "6": "echo" },
+    "lips_s07": { "8": "pause_b" }
+  },
+  "_interaction_doc": "씬ID → {type, ...}. silence=말할 수 있으나 침묵(비선택 기록), release=놓음, hold=되돌릴 수 없는 실행. 전부 본문의 '말하지/보내지/끄기' 순간.",
+  "interaction": {
+    "ineff_s02": { "type": "timeout_choice", "at": "end", "choices": ["복제한다", "복제하지 않는다"], "timeoutMs": 8000, "flag": "ineff_replicate" },
+    "lips_s03": { "type": "silence", "seconds": 4, "at": "end" },
+    "lips_s04": { "type": "silence", "seconds": 4, "at": "end" },
+    "lips_s07": { "type": "silence", "seconds": 4, "at": "end" },
+    "lips_s06": { "type": "release" },
+    "router_c3_s01": { "type": "hold", "seconds": 2.5 }
+  }
+}
