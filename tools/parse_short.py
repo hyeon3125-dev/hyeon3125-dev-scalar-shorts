@@ -128,7 +128,7 @@ def main():
             "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
             "sources": sources,
             "sceneCount": len(scenes), "lineCount": line_count,
-            "reachRules": {"fullSeedsMin": 0, "fullUnchosenMax": 9999, "silentUnchosenMin": 9999},
+            "reachRules": {"fullSeedsMin": 0, "fullUnchosenMax": 9999, "silentUnchosenMin": 3},
             "seedTotal": seed_total,
         },
         "order": order, "units": units, "scenes": scenes,

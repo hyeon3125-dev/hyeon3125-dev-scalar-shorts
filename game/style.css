@@ -96,6 +96,21 @@ body {
 .unit-card.resonant { color: var(--accent); }
 .unit-card.resonant::after { width: 6em; opacity: 0.9; }
 
+/* 단편집 작품 경계 — 챕터 마커보다 큰 휴지 + 제목. 책에서 '새 단편' 분명히 (장식 아님: 구조 표지) */
+.work-card {
+  margin: 7em 0 4em; text-align: center;
+  font-size: 1.15rem; letter-spacing: 0.1em;
+  color: var(--ink); animation: line-in 1.1s ease-out;
+}
+.work-card::before, .work-card::after {
+  content: ""; display: block;
+  width: 3.4em; height: 1px; background: var(--ink-dim);
+  margin: 0 auto 1.8em; opacity: 0.55;
+}
+.work-card::after { margin: 1.8em auto 0; }
+.work-card.resonant { color: var(--accent); }
+.work-card.resonant::after { opacity: 0.9; }
+
 .end-card { margin: 6em 0; text-align: center; animation: line-in 1.2s ease-out; }
 .end-title { letter-spacing: 0.5em; color: var(--ink); }
 .end-reach { margin-top: 1.4em; font-size: 0.78rem; letter-spacing: 0.18em; color: var(--ink-dim); }

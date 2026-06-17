@@ -372,6 +372,15 @@ window.STAGE = (function () {
     scrollToEnd();
   }
 
+  /* 단편집: 작품 경계 — 제목 카드(챕터 마커보다 큰 휴지). 책에서 '새 단편 시작'을 분명히. */
+  function renderWorkBreak(title, opts) {
+    const d = document.createElement("div");
+    d.className = "work-card" + ((opts && opts.resonance) ? " resonant" : "");
+    d.textContent = title;
+    $flow.appendChild(d);
+    scrollToEnd();
+  }
+
   function renderEnd(payload) {
     const wrap = document.createElement("div");
     wrap.className = "end-card";
@@ -594,7 +603,7 @@ window.STAGE = (function () {
   function hideTitle() { $title.hidden = true; }
 
   return {
-    init, renderLine, renderSceneBreak, renderUnitCard, renderEnd, renderSilentEpilogue,
+    init, renderLine, renderSceneBreak, renderUnitCard, renderWorkBreak, renderEnd, renderSilentEpilogue,
     renderJudgement, setThickness, showToc, hideToc, tocVisible, setMarked, easterShake,
     setFaction, setSound, setHud, clearFlow, showTitle, hideTitle,
     showGesture, hideGesture, holdProgress, traceProgress, showChoices, hideChoices,

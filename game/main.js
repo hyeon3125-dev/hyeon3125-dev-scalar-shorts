@@ -18,6 +18,7 @@
    * 페이지뷰가 아니라 '얼마나 깊이 읽는가'를 본다: 시작·권 도달·체류 분·완독. */
   let aMaxVol = 0;
   let aTimers = [];
+  let lastArc = null;   // 단편집: 작품(arc) 전환 감지 — 새 작품이면 제목 카드, 같은 작품이면 챕터 마커
   function track(name) { if (window.ANALYTICS && window.ANALYTICS.event) window.ANALYTICS.event(name); }
   function armReadingTimers() {
     aTimers.forEach(clearTimeout); aTimers = [];
@@ -81,6 +82,11 @@
       if (result.cancelled) return;  // 점프로 해제 — 기록도 진행도 없음
       if (op.spec.type === "silence") window.STATE.recordSilence(!result.silenceResets);
       if (op.spec.type === "timeout_choice") window.STATE.recordChoice(result.choice !== undefined);
+      // 단편집: 동요 없이 끝까지 침묵(silenceResets===0)한 것은 '말하지 않은 것'으로 기록 →
+      // 컬렉션 끝(입술의 무게)에서 SNZ 침묵 후기가 그 빈칸들을 회수한다. (불변식 5: 비선택=기록)
+      if (op.spec.type === "silence" && result.silenceResets === 0) {
+        window.STATE.addUnchosen(op.sceneId);
+      }
       if (result.unchosen) {
         window.STATE.addUnchosen(op.sceneId);  // 실패가 아니라 기록 (불변식 5)
       } else if (result.choice !== undefined && op.spec.flag) {
@@ -109,7 +115,15 @@
         case "unit": {
           window.STAGE.setFaction(op.faction, op.transition);
           window.STAGE.setSound(op.bgm, op.faction);
-          window.STAGE.renderUnitCard(op.label, { resonance: op.resonance });
+          {
+            const arc = (S.units[op.unit] && S.units[op.unit].arc) || op.label;
+            if (arc !== lastArc) {            // 새 작품 → 제목 카드 (단편집 경계)
+              window.STAGE.renderWorkBreak(arc, { resonance: op.resonance });
+              lastArc = arc;
+            } else {                          // 같은 작품의 다음 챕터 → 작은 마커
+              window.STAGE.renderUnitCard(op.label, { resonance: op.resonance });
+            }
+          }
           window.STAGE.setHud(op.label);
           armEgg();
           updateThickness();
@@ -151,6 +165,7 @@
   function restoreContext(sceneId, lineIdx) {
     const sc = S.scenes[sceneId];
     document.body.setAttribute("data-faction", sc.faction);
+    lastArc = (S.units[sc.unit] && S.units[sc.unit].arc) || null;  // 이어읽기: 현재 작품 기준 (전환 오발화 방지)
     window.STAGE.renderUnitCard(unitLabel(sceneId), {}, true);
     window.STAGE.setHud(unitLabel(sceneId));
     let last = null;
@@ -252,6 +267,7 @@
     window.STAGE.clearFlow();
     ended = false;
     started = true;
+    lastArc = null;
     track(progress ? "read/resume" : "read/start");
     armReadingTimers();
     if (progress) {

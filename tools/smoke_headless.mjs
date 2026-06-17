@@ -99,10 +99,13 @@ console.log("[1] 단편집 완주 (4작품 7유닛)");
   const taps = await playToEnd(g, S.meta.lineCount + 400);
   const flow = g.byId.flow;
   const lines = flow.children.filter((c) => c.className.includes("line") && !c.className.includes("fx-echo")).length;
-  const cards = flow.children.filter((c) => c.className.includes("unit-card"));
+  const work = flow.children.filter((c) => c.className.includes("work-card"));
+  const chap = flow.children.filter((c) => c.className.includes("unit-card"));
+  const stories = new Set(Object.values(S.units).map((u) => u.arc)).size;
   check(flow.children.some((c) => c.className.includes("end-card")), `완주: ${taps}탭`);
   check(lines >= S.meta.lineCount - 1 && lines <= S.meta.lineCount, `라인 전수 출력 ${lines}/${S.meta.lineCount}`);
-  check(cards.length === Object.keys(S.units).length, `유닛 카드 전수 ${cards.length}/${Object.keys(S.units).length}`);
+  check(work.length === stories, `작품 제목 카드 ${work.length}/${stories} (단편집 경계)`);
+  check(work.length + chap.length === Object.keys(S.units).length, `작품+챕터 카드 = 유닛 ${work.length + chap.length}/${Object.keys(S.units).length}`);
   check(g.ctx.STATE.getJudgement() === null, "판정 비발동 (단편 = ch.200 없음)");
 }
 
@@ -121,6 +124,26 @@ console.log("[2] 중간 이탈 → 이어읽기");
   btns[0].click();
   const restored = g.byId.flow.children.filter((c) => c.className.includes("line")).length;
   check(restored === saved.lineIdx, `맥락 복원 ${saved.lineIdx}줄`);
+}
+
+// ════ 3. 침묵 회수 — 말하지 않은 것이 끝에서 빈칸으로 (입술의 무게 심화) ════
+console.log("[3] 침묵 주행 → 침묵 후기(회수)");
+{
+  // 제시받은 비선택 3건(침묵)을 미리 기록 → 컬렉션 끝에서 silent reach + 후기
+  const unchosen = ["lips_s03", "lips_s04", "lips_s07"].map((sceneId, i) => ({ sceneId, ts: i + 1 }));
+  const store = {
+    shorts_settings: settingsPreset({}),
+    ["shorts_unchosen" + SUF]: JSON.stringify(unchosen),
+    ["shorts_progress" + SUF]: JSON.stringify({ sceneId: "lips_s07", lineIdx: 0, ts: 1 }),
+  };
+  const g = bootGame(store);
+  g.byId["title-screen"].children.filter((c) => c.className.includes("title-btn"))[0].click();
+  await playToEnd(g, 400);
+  const flow = g.byId.flow;
+  const endReach = flow.children.find((c) => c.className.includes("end-card"));
+  const epilogue = flow.children.some((c) => c.className.includes("unit-card") && c.textContent === (LANG === "en" ? "The Unasked" : (LANG === "jp" ? "問わなかったもの" : "묻지 않은 것들")));
+  check(!!endReach, "완주(침묵 경로)");
+  check(epilogue, "침묵 후기 1씬 — 말하지 않은 것들이 빈칸으로 회수");
 }
 
 console.log(`[lang=${LANG}] `, failures ? `\n스모크 실패 — ${failures}건` : "\n스모크 전부 통과");
